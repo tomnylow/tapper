@@ -3,47 +3,72 @@ package com.example.tapper1sthw
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.tapper1sthw.ui.theme.Tapper1stHwTheme
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
-            Tapper1stHwTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            Tapper(viewModel = viewModel)
         }
     }
 }
 
+@Preview
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Tapper(
+    viewModel: MainViewModel = MainViewModel()
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { viewModel.onButtonClick() }) {
+            Text("тык")
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = viewModel.currentText)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "тыкнул раз: ${viewModel.clickCount}")
+    }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Tapper1stHwTheme {
-        Greeting("Android")
+class MainViewModel : ViewModel() {
+    private val texts = listOf("клик", "клак", "клок")
+    var currentIndex by mutableIntStateOf(0)
+    var clickCount by mutableIntStateOf(0)
+
+    fun onButtonClick() {
+        clickCount++
+        currentIndex = (currentIndex + 1) % texts.size
     }
+
+    val currentText
+        get() = texts[currentIndex]
 }
