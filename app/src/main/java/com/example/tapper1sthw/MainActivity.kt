@@ -59,16 +59,3 @@ fun Tapper(
     }
 }
 
-class MainViewModel : ViewModel() {
-    private val texts = listOf("клик", "клак", "клок")
-    var currentIndex by mutableIntStateOf(0)
-    var clickCount by mutableIntStateOf(0)
-
-    fun onButtonClick() {
-        clickCount++
-        currentIndex = (currentIndex + 1) % texts.size
-    }
-
-    val currentText
-        get() = texts[currentIndex]
-}
