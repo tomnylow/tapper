@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,21 +25,25 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Tapper(viewModel = viewModel)
+            Tapper()
         }
     }
+
+}
+object AppTexts {
+    val clickTexts = listOf("клик", "клак", "клок")
 }
 
-@Preview
 @Composable
 fun Tapper(
-    viewModel: MainViewModel = MainViewModel()
 ) {
+    var currentIndex by rememberSaveable  { mutableIntStateOf(0) }
+    var clickCount by rememberSaveable { mutableIntStateOf(0) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,30 +51,21 @@ fun Tapper(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { viewModel.onButtonClick() }) {
+        Button(onClick = {
+            clickCount++
+            currentIndex = (currentIndex + 1) % AppTexts.clickTexts.size
+        }) {
             Text("тык")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = viewModel.currentText)
+        Text(text = AppTexts.clickTexts[currentIndex])
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "тыкнул раз: ${viewModel.clickCount}")
-    }
-}
-
-class MainViewModel : ViewModel() {
-    private val texts = listOf("клик", "клак", "клок")
-    var currentIndex by mutableIntStateOf(0)
-    var clickCount by mutableIntStateOf(0)
-
-    fun onButtonClick() {
-        clickCount++
-        currentIndex = (currentIndex + 1) % texts.size
+        Text(text = "тыкнул раз: ${clickCount}")
     }
 
-    val currentText
-        get() = texts[currentIndex]
 }
+
